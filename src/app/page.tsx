@@ -149,6 +149,9 @@ export default function Home() {
               <a href="#economics" className="ghost-button">
                 see the ROI case
               </a>
+              <a href="/portal-demo" className="ghost-button">
+                open portal demo
+              </a>
             </div>
 
             <div className="mt-12 grid gap-6 border-t border-white/10 pt-8 sm:grid-cols-3">
@@ -419,6 +422,9 @@ export default function Home() {
             <div className="flex flex-col gap-4 sm:flex-row lg:flex-col">
               <a href="#console" className="halo-button text-center">
                 relaunch demo
+              </a>
+              <a href="/portal-demo" className="ghost-button text-center">
+                open portal demo
               </a>
               <a
                 href="https://www.tinyfish.ai"

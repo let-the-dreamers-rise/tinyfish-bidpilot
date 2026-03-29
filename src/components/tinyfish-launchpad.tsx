@@ -199,6 +199,7 @@ export function TinyFishLaunchpad() {
   };
 
   const isLiveMode = Boolean(config?.enabled);
+  const isRunActive = run?.status === "PENDING" || run?.status === "RUNNING";
   const statusTone =
     run?.status === "COMPLETED"
       ? "text-[var(--success)]"
@@ -382,19 +383,32 @@ export function TinyFishLaunchpad() {
                   </p>
                 </div>
 
-                {run.streaming_url ? (
-                  <a
-                    href={run.streaming_url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="ghost-button"
-                  >
-                    open live stream
-                  </a>
-                ) : null}
+                <div className="rounded-[1rem] border border-white/8 bg-black/20 px-4 py-4">
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`h-2.5 w-2.5 rounded-full ${
+                        isRunActive
+                          ? "bg-[var(--accent)] shadow-[0_0_14px_rgba(245,166,95,0.8)]"
+                          : "bg-white/25"
+                      }`}
+                    />
+                    <p className="text-sm font-medium text-white">
+                      {isRunActive
+                        ? "Live updates are flowing in below"
+                        : "Run replay is captured below"}
+                    </p>
+                  </div>
+                  <p className="mt-3 text-sm leading-7 text-white/56">
+                    BidPilot keeps the run readable inside this panel using
+                    TinyFish polling, so you can follow step progress, status,
+                    and results without relying on an external stream tab.
+                  </p>
+                </div>
 
                 <div>
-                  <p className="section-label">recent steps</p>
+                  <p className="section-label">
+                    {isRunActive ? "live steps" : "recent steps"}
+                  </p>
                   <div className="mt-4 space-y-3">
                     {run.steps.slice(-5).map((step, index) => (
                       <div

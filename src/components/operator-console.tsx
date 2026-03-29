@@ -387,7 +387,7 @@ export function OperatorConsole() {
               />
             </div>
 
-            <div className="mt-8 grid gap-8 xl:grid-cols-[0.9fr_1.1fr]">
+            <div className="mt-8 grid gap-8 xl:grid-cols-[0.8fr_1.2fr]">
               <div className="space-y-5">
                 {activeRun.steps.map((step, index) => {
                   const state =
@@ -446,23 +446,25 @@ export function OperatorConsole() {
                   </div>
                 </div>
 
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-4 2xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
                   <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-5">
                     <p className="section-label">Artifacts</p>
                     <div className="mt-4 space-y-3">
                       {artifactStatus.map((artifact) => (
                         <div
                           key={artifact.document}
-                          className="flex items-center justify-between gap-3 text-sm"
+                          className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 rounded-[1rem] border border-white/8 bg-white/[0.02] px-3 py-3 text-sm"
                         >
-                          <span className="text-white/68">{artifact.document}</span>
+                          <span className="leading-6 text-white/68">
+                            {artifact.document}
+                          </span>
                           <span
-                            className={`signal-face text-[10px] uppercase tracking-[0.26em] ${
+                            className={`signal-face inline-flex shrink-0 rounded-full border px-2 py-1 text-[10px] uppercase tracking-[0.22em] ${
                               artifact.status === "attached"
-                                ? "text-[var(--success)]"
+                                ? "border-[rgba(158,217,181,0.22)] bg-[rgba(158,217,181,0.08)] text-[var(--success)]"
                                 : artifact.status === "mapping"
-                                  ? "text-[var(--accent)]"
-                                  : "text-white/38"
+                                  ? "border-[rgba(245,166,95,0.22)] bg-[rgba(245,166,95,0.08)] text-[var(--accent)]"
+                                  : "border-white/10 bg-white/[0.03] text-white/38"
                             }`}
                           >
                             {artifact.status}
@@ -474,10 +476,25 @@ export function OperatorConsole() {
 
                   <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-5">
                     <p className="section-label">Boundaries</p>
-                    <div className="mt-4 space-y-4 text-sm leading-7 text-white/62">
-                      <p>Credential scope: one portal, one role, one run.</p>
-                      <p>Auto-submit: disabled until human approval arrives.</p>
-                      <p>Replay: full action log available for every run.</p>
+                    <div className="mt-4 space-y-3">
+                      <div className="rounded-[1rem] border border-white/8 bg-white/[0.02] px-3 py-3">
+                        <p className="section-label text-[10px]">Credential scope</p>
+                        <p className="mt-2 text-sm leading-6 text-white/62">
+                          one portal, one role, one run
+                        </p>
+                      </div>
+                      <div className="rounded-[1rem] border border-white/8 bg-white/[0.02] px-3 py-3">
+                        <p className="section-label text-[10px]">Auto-submit</p>
+                        <p className="mt-2 text-sm leading-6 text-white/62">
+                          disabled until human approval arrives
+                        </p>
+                      </div>
+                      <div className="rounded-[1rem] border border-white/8 bg-white/[0.02] px-3 py-3">
+                        <p className="section-label text-[10px]">Replay</p>
+                        <p className="mt-2 text-sm leading-6 text-white/62">
+                          full action log available for every run
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>

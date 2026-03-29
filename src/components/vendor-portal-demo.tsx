@@ -1,7 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
+import {
+  useRef,
+  useState,
+  type ChangeEvent,
+  type FormEvent,
+} from "react";
 
 type PortalTab = "profile" | "documents" | "review";
 
@@ -25,6 +30,73 @@ const starterActivity: ActivityEntry[] = [
 ];
 
 const sampleCapabilityStatement = "capability-statement.pdf";
+const reviewSharePath = "/portal-demo?state=draft-saved&doc=capability-statement.pdf";
+
+function updateDemoUrl(nextUrl: string) {
+  window.history.replaceState(null, "", nextUrl);
+}
+
+function getInitialPortalState() {
+  if (typeof window === "undefined") {
+    return {
+      isSignedIn: false,
+      activeTab: "profile" as PortalTab,
+      documents: [] as string[],
+      lastSavedAt: null as string | null,
+      restoredActivity: [] as ActivityEntry[],
+    };
+  }
+
+  const searchParams = new URLSearchParams(window.location.search);
+  const state = searchParams.get("state");
+  const documentParam = searchParams.get("doc");
+  const restoredDocuments = documentParam ? [documentParam] : [];
+
+  if (!state) {
+    return {
+      isSignedIn: false,
+      activeTab: "profile" as PortalTab,
+      documents: restoredDocuments,
+      lastSavedAt: null as string | null,
+      restoredActivity: [] as ActivityEntry[],
+    };
+  }
+
+  if (state === "workspace") {
+    return {
+      isSignedIn: true,
+      activeTab: "profile" as PortalTab,
+      documents: restoredDocuments,
+      lastSavedAt: null as string | null,
+      restoredActivity: [] as ActivityEntry[],
+    };
+  }
+
+  if (state === "documents") {
+    return {
+      isSignedIn: true,
+      activeTab: "documents" as PortalTab,
+      documents: restoredDocuments,
+      lastSavedAt: null as string | null,
+      restoredActivity: [] as ActivityEntry[],
+    };
+  }
+
+  return {
+    isSignedIn: true,
+    activeTab: "review" as PortalTab,
+    documents: restoredDocuments,
+    lastSavedAt: "Draft state restored from shareable review URL",
+    restoredActivity: [
+      {
+        id: 3,
+        label: "Shareable review opened",
+        detail:
+          "Draft-saved state restored from the public review URL for demo playback.",
+      },
+    ],
+  };
+}
 
 const tabs: { id: PortalTab; label: string }[] = [
   { id: "profile", label: "Company profile" },
@@ -33,8 +105,9 @@ const tabs: { id: PortalTab; label: string }[] = [
 ];
 
 export function VendorPortalDemo() {
-  const [isSignedIn, setIsSignedIn] = useState(false);
-  const [activeTab, setActiveTab] = useState<PortalTab>("profile");
+  const initialPortalState = getInitialPortalState();
+  const [isSignedIn, setIsSignedIn] = useState(initialPortalState.isSignedIn);
+  const [activeTab, setActiveTab] = useState<PortalTab>(initialPortalState.activeTab);
   const [email, setEmail] = useState("ashgoyal1990@gmail.com");
   const [password, setPassword] = useState("");
   const [companyLegalName, setCompanyLegalName] = useState("Ashwin Goyal");
@@ -45,14 +118,20 @@ export function VendorPortalDemo() {
   const [website, setWebsite] = useState("https://tinyfish-bidpilot.vercel.app");
   const [primaryContact, setPrimaryContact] = useState("Ashwin Goyal");
   const [location, setLocation] = useState("Navi Mumbai, Maharashtra, India");
-  const [documents, setDocuments] = useState<string[]>([]);
-  const [activity, setActivity] = useState<ActivityEntry[]>(starterActivity);
-  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
+  const [documents, setDocuments] = useState<string[]>(initialPortalState.documents);
+  const [activity, setActivity] = useState<ActivityEntry[]>([
+    ...starterActivity,
+    ...initialPortalState.restoredActivity,
+  ]);
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(
+    initialPortalState.lastSavedAt,
+  );
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleLogin = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSignedIn(true);
+    updateDemoUrl("/portal-demo?state=workspace");
     setActivity((current) => [
       ...current,
       {
@@ -98,6 +177,7 @@ export function VendorPortalDemo() {
         ? current
         : [...current, sampleCapabilityStatement],
     );
+    updateDemoUrl("/portal-demo?state=documents&doc=capability-statement.pdf");
 
     setActivity((current) => [
       ...current,
@@ -123,6 +203,7 @@ export function VendorPortalDemo() {
 
     setLastSavedAt(timestamp);
     setActiveTab("review");
+    updateDemoUrl(reviewSharePath);
     setActivity((current) => [
       ...current,
       {
@@ -494,6 +575,12 @@ export function VendorPortalDemo() {
                     <p className="mt-3 text-sm leading-7 text-[#80552a]">
                       This portal intentionally stops at draft save so the final
                       irreversible action stays with the reviewer.
+                    </p>
+                    <p className="mt-4 text-sm leading-7 text-[#80552a]">
+                      Review URL:
+                      <span className="ml-2 rounded-full bg-white/70 px-3 py-1 font-mono text-[11px] text-[#6f461f]">
+                        {reviewSharePath}
+                      </span>
                     </p>
                   </div>
                 </div>

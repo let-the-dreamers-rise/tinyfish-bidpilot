@@ -26,7 +26,10 @@ type ConfigResponse = {
   defaultBrowserProfile: BrowserProfile;
   defaultProxyCountryCode: string;
   defaultSafetyMode: SafetyMode;
+  requiresDemoCode: boolean;
 };
+
+const DEMO_CODE_HEADER = "x-bidpilot-demo-code";
 
 const presets: LaunchPreset[] = [
   {
@@ -70,6 +73,7 @@ export function TinyFishLaunchpad() {
   const [proxyCountryCode, setProxyCountryCode] = useState("US");
   const [useVault, setUseVault] = useState(false);
   const [credentialItemIdsInput, setCredentialItemIdsInput] = useState("");
+  const [demoAccessCode, setDemoAccessCode] = useState("");
   const [runId, setRunId] = useState<string | null>(null);
   const [run, setRun] = useState<TinyFishRun | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -104,6 +108,7 @@ export function TinyFishLaunchpad() {
         defaultBrowserProfile: "stealth",
         defaultProxyCountryCode: "US",
         defaultSafetyMode: "read-only",
+        requiresDemoCode: false,
       });
     });
 
@@ -120,6 +125,11 @@ export function TinyFishLaunchpad() {
     try {
       const response = await fetch(`/api/tinyfish/run/${runId}`, {
         cache: "no-store",
+        headers: config?.requiresDemoCode
+          ? {
+              [DEMO_CODE_HEADER]: demoAccessCode.trim(),
+            }
+          : undefined,
       });
       const payload = (await response.json()) as TinyFishRun & {
         error?: string;
@@ -184,6 +194,9 @@ export function TinyFishLaunchpad() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          ...(config?.requiresDemoCode
+            ? { [DEMO_CODE_HEADER]: demoAccessCode.trim() }
+            : {}),
         },
         body: JSON.stringify({
           url,
@@ -225,6 +238,7 @@ export function TinyFishLaunchpad() {
   const isLiveMode = Boolean(config?.enabled);
   const isRunActive = run?.status === "PENDING" || run?.status === "RUNNING";
   const hasCredentialIds = credentialItemIdsInput.trim().length > 0;
+  const needsDemoCode = Boolean(config?.requiresDemoCode);
   const guardrailCopy =
     safetyMode === "draft-save"
       ? "Agent may log in, fill fields, and upload documents, but the server will always block final irreversible submit actions and stop on the approval edge."
@@ -343,6 +357,23 @@ export function TinyFishLaunchpad() {
               </p>
             </div>
 
+            {needsDemoCode ? (
+              <label className="block">
+                <span className="section-label">demo access code</span>
+                <input
+                  value={demoAccessCode}
+                  onChange={(event) => setDemoAccessCode(event.target.value)}
+                  className="mt-3 w-full rounded-[1.1rem] border border-white/10 bg-black/25 px-4 py-3 text-sm text-white outline-none transition focus:border-[var(--accent)]"
+                  placeholder="Enter the private code for live TinyFish runs"
+                />
+                <p className="mt-3 text-sm leading-7 text-white/50">
+                  The public production site stays open, but live automation is
+                  protected with a private code so random traffic cannot burn
+                  TinyFish credits.
+                </p>
+              </label>
+            ) : null}
+
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="flex items-center gap-3 rounded-[1rem] border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white/72">
                 <input
@@ -377,7 +408,9 @@ export function TinyFishLaunchpad() {
                 />
                 <p className="mt-3 text-sm leading-7 text-white/50">
                   Pass TinyFish Vault credential item IDs here for authenticated
-                  draft-save workflows. Separate multiple IDs with commas.
+                  draft-save workflows. Separate multiple IDs with commas, or
+                  leave this blank to let TinyFish use all eligible enabled
+                  Vault items.
                 </p>
               </label>
             ) : null}
@@ -396,9 +429,7 @@ export function TinyFishLaunchpad() {
             <button
               type="submit"
               disabled={
-                !isLiveMode ||
-                isSubmitting ||
-                (useVault && !hasCredentialIds && safetyMode === "draft-save")
+                !isLiveMode || isSubmitting || (needsDemoCode && !demoAccessCode.trim())
               }
               className="halo-button disabled:cursor-not-allowed disabled:opacity-50"
             >
@@ -410,7 +441,10 @@ export function TinyFishLaunchpad() {
             {isLiveMode ? (
               <p>
                 Live mode is enabled. This form will create a real asynchronous
-                run via `POST /v1/automation/run-async`.
+                run via `POST /v1/automation/run-async`
+                {needsDemoCode
+                  ? " after the private demo access code is supplied."
+                  : "."}
               </p>
             ) : (
               <p>
@@ -471,7 +505,7 @@ export function TinyFishLaunchpad() {
                       {useVault
                         ? hasCredentialIds
                           ? "credential ids attached"
-                          : "vault enabled without ids"
+                          : "all enabled vault items allowed"
                         : "no vault credentials"}
                     </p>
                   </div>

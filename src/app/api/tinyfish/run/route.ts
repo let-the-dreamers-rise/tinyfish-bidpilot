@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 
 import {
+  BIDPILOT_DEMO_CODE_ERROR,
+  requestHasValidBidPilotDemoCode,
+} from "@/lib/demo-access";
+import {
   launchTinyFishRun,
   type BrowserProfile,
   type TinyFishLaunchInput,
@@ -27,6 +31,13 @@ function withSafetyGuardrails(goal: string, safetyMode: SafetyMode) {
 }
 
 export async function POST(request: Request) {
+  if (!requestHasValidBidPilotDemoCode(request)) {
+    return NextResponse.json(
+      { error: BIDPILOT_DEMO_CODE_ERROR },
+      { status: 401 },
+    );
+  }
+
   const body = (await request.json().catch(() => null)) as
     | TinyFishLaunchRequest
     | null;

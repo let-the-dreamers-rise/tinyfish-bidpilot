@@ -24,6 +24,8 @@ const starterActivity: ActivityEntry[] = [
   },
 ];
 
+const sampleCapabilityStatement = "capability-statement.pdf";
+
 const tabs: { id: PortalTab; label: string }[] = [
   { id: "profile", label: "Company profile" },
   { id: "documents", label: "Documents" },
@@ -86,6 +88,24 @@ export function VendorPortalDemo() {
         id: Date.now(),
         label: "Evidence attached",
         detail: `${nextFiles.join(", ")} added to the supplier profile.`,
+      },
+    ]);
+  };
+
+  const attachSampleCapabilityStatement = () => {
+    setDocuments((current) =>
+      current.includes(sampleCapabilityStatement)
+        ? current
+        : [...current, sampleCapabilityStatement],
+    );
+
+    setActivity((current) => [
+      ...current,
+      {
+        id: Date.now(),
+        label: "Sample evidence attached",
+        detail:
+          "Built-in capability statement attached to the draft workspace for review.",
       },
     ]);
   };
@@ -389,8 +409,15 @@ export function VendorPortalDemo() {
                     />
                     <button
                       type="button"
+                      onClick={attachSampleCapabilityStatement}
+                      className="mt-5 inline-flex items-center justify-center rounded-full border border-[#0f3d75] px-5 py-3 font-mono text-xs uppercase tracking-[0.28em] text-[#0f3d75] transition hover:-translate-y-0.5 hover:bg-[#eaf2ff]"
+                    >
+                      attach sample capability statement
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="mt-5 inline-flex items-center justify-center rounded-full bg-[#0f3d75] px-5 py-3 font-mono text-xs uppercase tracking-[0.28em] text-white transition hover:-translate-y-0.5 hover:bg-[#154b8d]"
+                      className="mt-3 inline-flex items-center justify-center rounded-full bg-[#0f3d75] px-5 py-3 font-mono text-xs uppercase tracking-[0.28em] text-white transition hover:-translate-y-0.5 hover:bg-[#154b8d]"
                     >
                       choose files
                     </button>

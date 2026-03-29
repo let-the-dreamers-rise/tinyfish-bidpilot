@@ -59,6 +59,15 @@ const presets: LaunchPreset[] = [
     recommendedMode: "draft-save",
     recommendedVault: true,
   },
+  {
+    id: "sandbox",
+    label: "Portal sandbox",
+    url: "https://tinyfish-bidpilot.vercel.app/portal-demo",
+    goal:
+      "Open the Northstar Vendor Portal sandbox, sign in with any email and password, open the Documents tab, click 'attach sample capability statement', save the draft, and stop on the review state where final publish is locked.",
+    recommendedMode: "draft-save",
+    recommendedVault: false,
+  },
 ];
 
 export function TinyFishLaunchpad() {

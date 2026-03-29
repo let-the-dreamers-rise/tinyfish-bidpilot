@@ -18,6 +18,7 @@ type LaunchPreset = {
   url: string;
   goal: string;
   recommendedMode: SafetyMode;
+  recommendedVault: boolean;
 };
 
 type ConfigResponse = {
@@ -35,6 +36,7 @@ const presets: LaunchPreset[] = [
     goal:
       "Open BidNet, locate the vendor login and primary active-bids search entry points, capture the visible landing-page call-to-action labels, and stop without logging in, submitting anything, or modifying data.",
     recommendedMode: "read-only",
+    recommendedVault: false,
   },
   {
     id: "security",
@@ -43,14 +45,16 @@ const presets: LaunchPreset[] = [
     goal:
       "Open the trust center, identify the main security and compliance entry points, capture the visible trust navigation labels, and stop without logging in or modifying anything.",
     recommendedMode: "read-only",
+    recommendedVault: false,
   },
   {
     id: "supplier",
     label: "Supplier onboarding",
     url: "https://supplier.ariba.com",
     goal:
-      "Open the supplier portal, identify the sign-in and registration entry points, capture the visible onboarding-related calls to action, and stop without logging in, submitting anything, or modifying data.",
-    recommendedMode: "read-only",
+      "Sign in to the supplier portal, navigate profile, tax, and insurance sections, upload the required documents, save the supplier draft, and stop before final activation for human approval.",
+    recommendedMode: "draft-save",
+    recommendedVault: true,
   },
 ];
 
@@ -65,6 +69,7 @@ export function TinyFishLaunchpad() {
   const [proxyEnabled, setProxyEnabled] = useState(false);
   const [proxyCountryCode, setProxyCountryCode] = useState("US");
   const [useVault, setUseVault] = useState(false);
+  const [credentialItemIdsInput, setCredentialItemIdsInput] = useState("");
   const [runId, setRunId] = useState<string | null>(null);
   const [run, setRun] = useState<TinyFishRun | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -158,6 +163,7 @@ export function TinyFishLaunchpad() {
     setUrl(preset.url);
     setGoal(preset.goal);
     setSafetyMode(preset.recommendedMode);
+    setUseVault(preset.recommendedVault);
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -167,6 +173,11 @@ export function TinyFishLaunchpad() {
     setErrorMessage(null);
     setRunId(null);
     setRun(null);
+
+    const credentialItemIds = credentialItemIdsInput
+      .split(",")
+      .map((value) => value.trim())
+      .filter(Boolean);
 
     try {
       const response = await fetch("/api/tinyfish/run", {
@@ -182,6 +193,7 @@ export function TinyFishLaunchpad() {
           proxyCountryCode,
           useVault,
           safetyMode,
+          credentialItemIds,
         }),
       });
 
@@ -212,6 +224,7 @@ export function TinyFishLaunchpad() {
 
   const isLiveMode = Boolean(config?.enabled);
   const isRunActive = run?.status === "PENDING" || run?.status === "RUNNING";
+  const hasCredentialIds = credentialItemIdsInput.trim().length > 0;
   const guardrailCopy =
     safetyMode === "draft-save"
       ? "Agent may log in, fill fields, and upload documents, but the server will always block final irreversible submit actions and stop on the approval edge."
@@ -350,9 +363,43 @@ export function TinyFishLaunchpad() {
               </label>
             </div>
 
+            {useVault ? (
+              <label className="block">
+                <span className="section-label">vault credential item ids</span>
+                <textarea
+                  value={credentialItemIdsInput}
+                  onChange={(event) =>
+                    setCredentialItemIdsInput(event.target.value)
+                  }
+                  rows={3}
+                  className="mt-3 w-full rounded-[1.1rem] border border-white/10 bg-black/25 px-4 py-3 text-sm leading-7 text-white outline-none transition focus:border-[var(--accent)]"
+                  placeholder="cred_bidnet_login, cred_pricing_matrix, cred_vendor_profile"
+                />
+                <p className="mt-3 text-sm leading-7 text-white/50">
+                  Pass TinyFish Vault credential item IDs here for authenticated
+                  draft-save workflows. Separate multiple IDs with commas.
+                </p>
+              </label>
+            ) : null}
+
+            {safetyMode === "draft-save" ? (
+              <div className="rounded-[1rem] border border-[rgba(245,166,95,0.18)] bg-[rgba(245,166,95,0.08)] px-4 py-4">
+                <p className="section-label">draft-save checklist</p>
+                <div className="mt-3 space-y-2 text-sm leading-7 text-white/60">
+                  <p>1. Use a real portal account through TinyFish Vault.</p>
+                  <p>2. Upload one supporting file to prove real labor.</p>
+                  <p>3. Save the draft and stop before final submit.</p>
+                </div>
+              </div>
+            ) : null}
+
             <button
               type="submit"
-              disabled={!isLiveMode || isSubmitting}
+              disabled={
+                !isLiveMode ||
+                isSubmitting ||
+                (useVault && !hasCredentialIds && safetyMode === "draft-save")
+              }
               className="halo-button disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isSubmitting ? "launching run" : "launch TinyFish run"}
@@ -419,9 +466,30 @@ export function TinyFishLaunchpad() {
                     <p className="mt-3 text-sm text-white/68">{safetyMode}</p>
                   </div>
                   <div>
+                    <p className="section-label">vault state</p>
+                    <p className="mt-3 text-sm text-white/68">
+                      {useVault
+                        ? hasCredentialIds
+                          ? "credential ids attached"
+                          : "vault enabled without ids"
+                        : "no vault credentials"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
                     <p className="section-label">human handoff</p>
                     <p className="mt-3 text-sm text-white/68">
                       capture lead approval required
+                    </p>
+                  </div>
+                  <div>
+                    <p className="section-label">run type</p>
+                    <p className="mt-3 text-sm text-white/68">
+                      {safetyMode === "draft-save"
+                        ? "authenticated draft workflow"
+                        : "read-only audit workflow"}
                     </p>
                   </div>
                 </div>

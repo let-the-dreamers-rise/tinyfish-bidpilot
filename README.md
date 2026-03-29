@@ -27,7 +27,7 @@ BidPilot is built around the idea that proposal software should not just suggest
 - simulates an operator console for safe narrative framing even when you do not want to spend live credits
 - launches real TinyFish runs through a server-side API layer
 - polls run status, recent steps, and final result payloads in the UI
-- supports stealth or lite browser profiles, proxy configuration, and optional TinyFish Vault credentials
+- supports stealth or lite browser profiles, `read-only` and `draft-save` execution policies, proxy configuration, and optional TinyFish Vault credentials
 
 ## Product Surfaces
 
@@ -125,7 +125,7 @@ http://localhost:3000
   Returns whether live mode is enabled and the default browser settings.
 
 - `POST /api/tinyfish/run`
-  Starts a TinyFish async run using the submitted URL, goal, browser profile, proxy configuration, and vault toggle.
+  Starts a TinyFish async run using the submitted URL, goal, browser profile, execution policy, proxy configuration, vault toggle, and optional TinyFish Vault credential item IDs.
 
 - `GET /api/tinyfish/run/[id]`
   Polls a single TinyFish run and returns its latest status, steps, stream link, and result payload.
@@ -142,6 +142,15 @@ For a low-risk live demo:
 ## Deployment
 
 The app is deployed on Vercel and linked to the GitHub repository above. TinyFish environment variables are configured on Vercel for development, preview, and production environments.
+
+## Submission Assets
+
+The repo includes a ready-to-use submission pack in `submission/`:
+
+- `HACKEREARTH_SUBMISSION.md`
+- `X_POST.md`
+- `DEMO_CHECKLIST.md`
+- `PILOT_OUTREACH.md`
 
 ## Security Notes
 

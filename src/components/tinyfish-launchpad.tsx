@@ -29,21 +29,21 @@ const presets: LaunchPreset[] = [
     label: "Public bid",
     url: "https://bidnet.com",
     goal:
-      "Open the active bid workspace, gather all required sections, autofill answers from our proposal pack, upload the pricing matrix, and stop on the final review page for approval.",
+      "Open BidNet, locate the vendor login and primary active-bids search entry points, capture the visible landing-page call-to-action labels, and stop without logging in, submitting anything, or modifying data.",
   },
   {
     id: "security",
     label: "Security review",
-    url: "https://trustcenter.example.com",
+    url: "https://trust.openai.com",
     goal:
-      "Open the security questionnaire, answer as many controls as possible from our trust library, upload certifications, and hold on the final confirmation screen.",
+      "Open the trust center, identify the main security and compliance entry points, capture the visible trust navigation labels, and stop without logging in or modifying anything.",
   },
   {
     id: "supplier",
     label: "Supplier onboarding",
     url: "https://supplier.ariba.com",
     goal:
-      "Complete supplier onboarding across profile, banking, tax, and insurance sections, resolve validation issues, and pause before final activation.",
+      "Open the supplier portal, identify the sign-in and registration entry points, capture the visible onboarding-related calls to action, and stop without logging in, submitting anything, or modifying data.",
   },
 ];
 
@@ -56,7 +56,7 @@ export function TinyFishLaunchpad() {
     useState<BrowserProfile>("stealth");
   const [proxyEnabled, setProxyEnabled] = useState(false);
   const [proxyCountryCode, setProxyCountryCode] = useState("US");
-  const [useVault, setUseVault] = useState(true);
+  const [useVault, setUseVault] = useState(false);
   const [runId, setRunId] = useState<string | null>(null);
   const [run, setRun] = useState<TinyFishRun | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -329,9 +329,12 @@ export function TinyFishLaunchpad() {
               </p>
             ) : (
               <p>
-                Add <code className="signal-face text-[var(--accent)]">TINYFISH_API_KEY</code>{" "}
-                to unlock live runs. Until then, the cinematic command deck above
-                remains your demo-safe fallback.
+                Add{" "}
+                <code className="signal-face text-[var(--accent)]">
+                  TINYFISH_API_KEY
+                </code>{" "}
+                to unlock live runs. Until then, the cinematic command deck
+                above remains your demo-safe fallback.
               </p>
             )}
           </div>
@@ -345,7 +348,9 @@ export function TinyFishLaunchpad() {
                 {runId ? runId : "No run launched yet"}
               </h3>
             </div>
-            <span className={`signal-face text-xs uppercase tracking-[0.3em] ${statusTone}`}>
+            <span
+              className={`signal-face text-xs uppercase tracking-[0.3em] ${statusTone}`}
+            >
               {run?.status ?? "idle"}
             </span>
           </div>
@@ -358,7 +363,9 @@ export function TinyFishLaunchpad() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <p className="section-label">created</p>
-                    <p className="mt-3 text-sm text-white/68">{run.created_at}</p>
+                    <p className="mt-3 text-sm text-white/68">
+                      {run.created_at}
+                    </p>
                   </div>
                   <div>
                     <p className="section-label">steps</p>
@@ -370,7 +377,9 @@ export function TinyFishLaunchpad() {
 
                 <div>
                   <p className="section-label">goal</p>
-                  <p className="mt-3 text-sm leading-7 text-white/68">{run.goal}</p>
+                  <p className="mt-3 text-sm leading-7 text-white/68">
+                    {run.goal}
+                  </p>
                 </div>
 
                 {run.streaming_url ? (
@@ -397,7 +406,7 @@ export function TinyFishLaunchpad() {
                         </p>
                         <p className="mt-2 text-xs uppercase tracking-[0.24em] text-white/42">
                           {step.status ?? "UNKNOWN"}
-                          {step.duration ? ` · ${step.duration}` : ""}
+                          {step.duration ? ` | ${step.duration}` : ""}
                         </p>
                       </div>
                     ))}

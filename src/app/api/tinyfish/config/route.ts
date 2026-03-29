@@ -7,5 +7,6 @@ export async function GET() {
     enabled: hasTinyFishApiKey(),
     defaultBrowserProfile: "stealth",
     defaultProxyCountryCode: "US",
+    defaultSafetyMode: "read-only",
   });
 }

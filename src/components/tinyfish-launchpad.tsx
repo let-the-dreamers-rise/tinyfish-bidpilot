@@ -10,17 +10,21 @@ import {
 
 import type { BrowserProfile, TinyFishRun } from "@/lib/tinyfish";
 
+type SafetyMode = "read-only" | "draft-save";
+
 type LaunchPreset = {
   id: string;
   label: string;
   url: string;
   goal: string;
+  recommendedMode: SafetyMode;
 };
 
 type ConfigResponse = {
   enabled: boolean;
   defaultBrowserProfile: BrowserProfile;
   defaultProxyCountryCode: string;
+  defaultSafetyMode: SafetyMode;
 };
 
 const presets: LaunchPreset[] = [
@@ -30,6 +34,7 @@ const presets: LaunchPreset[] = [
     url: "https://bidnet.com",
     goal:
       "Open BidNet, locate the vendor login and primary active-bids search entry points, capture the visible landing-page call-to-action labels, and stop without logging in, submitting anything, or modifying data.",
+    recommendedMode: "read-only",
   },
   {
     id: "security",
@@ -37,6 +42,7 @@ const presets: LaunchPreset[] = [
     url: "https://trust.openai.com",
     goal:
       "Open the trust center, identify the main security and compliance entry points, capture the visible trust navigation labels, and stop without logging in or modifying anything.",
+    recommendedMode: "read-only",
   },
   {
     id: "supplier",
@@ -44,6 +50,7 @@ const presets: LaunchPreset[] = [
     url: "https://supplier.ariba.com",
     goal:
       "Open the supplier portal, identify the sign-in and registration entry points, capture the visible onboarding-related calls to action, and stop without logging in, submitting anything, or modifying data.",
+    recommendedMode: "read-only",
   },
 ];
 
@@ -54,6 +61,7 @@ export function TinyFishLaunchpad() {
   const [goal, setGoal] = useState(presets[0].goal);
   const [browserProfile, setBrowserProfile] =
     useState<BrowserProfile>("stealth");
+  const [safetyMode, setSafetyMode] = useState<SafetyMode>("read-only");
   const [proxyEnabled, setProxyEnabled] = useState(false);
   const [proxyCountryCode, setProxyCountryCode] = useState("US");
   const [useVault, setUseVault] = useState(false);
@@ -78,6 +86,7 @@ export function TinyFishLaunchpad() {
       setConfig(nextConfig);
       setBrowserProfile(nextConfig.defaultBrowserProfile);
       setProxyCountryCode(nextConfig.defaultProxyCountryCode);
+      setSafetyMode(nextConfig.defaultSafetyMode);
     }
 
     loadConfig().catch(() => {
@@ -89,6 +98,7 @@ export function TinyFishLaunchpad() {
         enabled: false,
         defaultBrowserProfile: "stealth",
         defaultProxyCountryCode: "US",
+        defaultSafetyMode: "read-only",
       });
     });
 
@@ -147,6 +157,7 @@ export function TinyFishLaunchpad() {
     setSelectedPresetId(preset.id);
     setUrl(preset.url);
     setGoal(preset.goal);
+    setSafetyMode(preset.recommendedMode);
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -170,6 +181,7 @@ export function TinyFishLaunchpad() {
           proxyEnabled,
           proxyCountryCode,
           useVault,
+          safetyMode,
         }),
       });
 
@@ -200,6 +212,10 @@ export function TinyFishLaunchpad() {
 
   const isLiveMode = Boolean(config?.enabled);
   const isRunActive = run?.status === "PENDING" || run?.status === "RUNNING";
+  const guardrailCopy =
+    safetyMode === "draft-save"
+      ? "Agent may log in, fill fields, and upload documents, but the server will always block final irreversible submit actions and stop on the approval edge."
+      : "Agent stays read-only. It can inspect the portal and extract what matters, but it will not log in, upload, submit, or modify anything.";
   const statusTone =
     run?.status === "COMPLETED"
       ? "text-[var(--success)]"
@@ -282,6 +298,20 @@ export function TinyFishLaunchpad() {
               </label>
 
               <label className="block">
+                <span className="section-label">execution policy</span>
+                <select
+                  value={safetyMode}
+                  onChange={(event) =>
+                    setSafetyMode(event.target.value as SafetyMode)
+                  }
+                  className="mt-3 w-full rounded-[1.1rem] border border-white/10 bg-black/25 px-4 py-3 text-sm text-white outline-none transition focus:border-[var(--accent)]"
+                >
+                  <option value="read-only">read-only audit</option>
+                  <option value="draft-save">draft-save only</option>
+                </select>
+              </label>
+
+              <label className="block">
                 <span className="section-label">proxy country</span>
                 <input
                   value={proxyCountryCode}
@@ -291,6 +321,13 @@ export function TinyFishLaunchpad() {
                   maxLength={2}
                 />
               </label>
+            </div>
+
+            <div className="rounded-[1rem] border border-white/8 bg-black/20 px-4 py-4">
+              <p className="section-label">guardrails</p>
+              <p className="mt-3 text-sm leading-7 text-white/58">
+                {guardrailCopy}
+              </p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
@@ -372,6 +409,19 @@ export function TinyFishLaunchpad() {
                     <p className="section-label">steps</p>
                     <p className="mt-3 text-sm text-white/68">
                       {run.num_of_steps ?? run.steps.length}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <p className="section-label">execution policy</p>
+                    <p className="mt-3 text-sm text-white/68">{safetyMode}</p>
+                  </div>
+                  <div>
+                    <p className="section-label">human handoff</p>
+                    <p className="mt-3 text-sm text-white/68">
+                      capture lead approval required
                     </p>
                   </div>
                 </div>

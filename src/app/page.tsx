@@ -1,52 +1,92 @@
 import { OperatorConsole } from "@/components/operator-console";
+import { RoiCalculator } from "@/components/roi-calculator";
 import { TinyFishLaunchpad } from "@/components/tinyfish-launchpad";
 
 const signalLanes = [
   {
-    label: "Portal coverage",
-    value: "11 live surfaces",
-    note: "Procurement, trust centers, and supplier onboarding flows.",
+    label: "Primary buyer",
+    value: "Proposal manager",
+    note: "Small and mid-market government contractors that live inside procurement portals.",
   },
   {
-    label: "Human effort removed",
-    value: "25 hrs per bid",
-    note: "Targeting the slowest manual portal labor instead of generic chat.",
+    label: "Core workflow",
+    value: "Save draft, stop at review",
+    note: "Log in, extract requirements, attach files, and park the bid at the approval edge.",
   },
   {
-    label: "Trust model",
-    value: "bounded delegation",
-    note: "The agent acts inside one scoped surface and stops at the approval edge.",
+    label: "ROI story",
+    value: "$11.9k / month",
+    note: "At 8 bids per month, 25 hours per bid, and 70% automation coverage.",
   },
 ];
 
 const workflowSteps = [
   {
-    title: "Lock the scope",
+    title: "Scope one portal, one bid, one owner",
     detail:
-      "Attach one credential pack, one portal, and one objective so the agent behaves like an operator with a bounded mandate instead of a general chatbot.",
+      "BidPilot is not trying to automate the whole company. It gets a single bid workspace, one credential scope, one proposal pack, and one owner who can approve the final handoff.",
   },
   {
-    title: "Read the live surface",
+    title: "Read the live portal and extract the ugly parts",
     detail:
-      "TinyFish handles the hard browser work: rendering, session state, form discovery, and the ugly edges that break scripted API wrappers.",
+      "TinyFish handles rendering, sessions, pagination, and dynamic UI. The agent resolves required fields, stale boilerplate, and missing attachments without turning the workflow into a brittle script.",
   },
   {
-    title: "Map evidence and answers",
+    title: "Map answers, evidence, and required uploads",
     detail:
-      "The run pulls from your proposal pack, trust library, or onboarding data, then writes everything back into the actual portal with provenance.",
+      "The run pulls from the proposal pack, trust library, and pricing matrix, then writes back into the actual portal with traceable artifacts and a clean draft state.",
   },
   {
-    title: "Stop at the approval edge",
+    title: "Generate an approval packet instead of blind submit",
     detail:
-      "The agent does the labor, but the human keeps the last decision. Replay, deltas, and approval gates make the workflow trustworthy on camera and in production.",
+      "The agent does the labor, but the human keeps the irreversible action. Approval gates, audit logs, and a replayable draft handoff make this usable in a real proposal team.",
   },
 ];
 
 const heroEvents = [
-  "vault://procurement/bidnet-direct",
-  "session.stealth = true",
-  "forms.detected = 42",
-  "draft.status = review-ready",
+  "buyer = proposal-manager",
+  "required.fields = 42",
+  "attachments.mapped = 3",
+  "submit.lock = approval-gated",
+];
+
+const buyerSignals = [
+  {
+    label: "Who pays",
+    title: "Capture lead or proposal manager",
+    detail:
+      "The buyer already owns deadline risk, portal chaos, and the labor cost of every repetitive submission cycle.",
+  },
+  {
+    label: "Why now",
+    title: "More bids now end in portals, not inboxes",
+    detail:
+      "Proposal teams already use AI for drafting. The painful last mile is still browser labor, attachment work, and manual draft staging.",
+  },
+  {
+    label: "How often",
+    title: "Every bid cycle, multiple times each month",
+    detail:
+      "This is not a one-off workflow. Teams repeat company profile entry, attachment mapping, and approval routing every single time they respond.",
+  },
+];
+
+const trustRails = [
+  {
+    label: "Approval gate",
+    detail:
+      "Final irreversible submit actions stay blocked. The run stops on the last review screen or draft-saved state.",
+  },
+  {
+    label: "Audit log",
+    detail:
+      "Each run returns recent steps, replay context, and a structured result payload so the human can verify what happened.",
+  },
+  {
+    label: "Bounded delegation",
+    detail:
+      "One portal, one run, one credential scope. The agent gets a mandate, not open-ended authority.",
+  },
 ];
 
 export default function Home() {
@@ -73,16 +113,11 @@ export default function Home() {
               <a href="#workflow" className="transition hover:text-white">
                 Workflow
               </a>
+              <a href="#economics" className="transition hover:text-white">
+                ROI
+              </a>
               <a href="#console" className="transition hover:text-white">
                 Command deck
-              </a>
-              <a
-                href="https://www.tinyfish.ai"
-                target="_blank"
-                rel="noreferrer"
-                className="transition hover:text-white"
-              >
-                TinyFish
               </a>
             </div>
           </div>
@@ -90,28 +125,29 @@ export default function Home() {
 
         <div className="mx-auto grid min-h-screen max-w-7xl items-center gap-14 px-6 pb-16 pt-28 lg:grid-cols-[1.03fr_0.97fr] lg:px-10 lg:pt-32">
           <div className="relative z-10 max-w-3xl">
-            <p className="section-label reveal-up">live web work, not demo theater</p>
+            <p className="section-label reveal-up">
+              public-sector bid operations, not demo theater
+            </p>
             <div className="reveal-up delay-1 mt-5">
               <div className="mb-5 text-sm font-medium uppercase tracking-[0.38em] text-white/32">
                 BidPilot
               </div>
               <h1 className="max-w-4xl text-[clamp(3.7rem,9vw,8.4rem)] font-medium leading-[0.92] tracking-[-0.06em] text-white">
-                Launch the web agent that actually finishes the bid.
+                The draft-submission agent for government contractors.
               </h1>
             </div>
             <p className="reveal-up delay-2 mt-7 max-w-2xl text-lg leading-8 text-white/60 lg:text-xl">
-              A TinyFish-powered operator for proposal portals, security
-              questionnaires, and approval-heavy onboarding flows. It logs in,
-              navigates the live surface, fills the ugly parts, and stops before
-              the last irreversible click.
+              BidPilot helps proposal teams log into live procurement portals,
+              extract requirements, map answers, upload evidence, save a clean
+              draft, and stop before the last irreversible click.
             </p>
 
             <div className="reveal-up delay-3 mt-10 flex flex-col gap-4 sm:flex-row">
               <a href="#console" className="halo-button">
                 open command deck
               </a>
-              <a href="#workflow" className="ghost-button">
-                see the operator flow
+              <a href="#economics" className="ghost-button">
+                see the ROI case
               </a>
             </div>
 
@@ -140,7 +176,7 @@ export default function Home() {
                   <div>
                     <p className="section-label">raw demo surface</p>
                     <p className="mt-3 text-xl font-medium text-white">
-                      Run 018 · portal replay
+                      Run 018 | approval packet
                     </p>
                   </div>
                   <span className="signal-face text-xs uppercase tracking-[0.32em] text-[var(--accent)]">
@@ -154,8 +190,9 @@ export default function Home() {
                       84%
                     </p>
                     <p className="mt-3 max-w-xs text-sm leading-7 text-white/52">
-                      The agent has already handled login, field discovery,
-                      attachment mapping, and draft staging inside a live portal.
+                      The agent has already handled field discovery, attachment
+                      mapping, and draft staging inside a live procurement
+                      portal.
                     </p>
                   </div>
 
@@ -170,7 +207,9 @@ export default function Home() {
                         </span>
                         <span
                           className={`h-2.5 w-2.5 rounded-full ${
-                            index < 3 ? "bg-[var(--success)]" : "bg-[var(--accent)]"
+                            index < 3
+                              ? "bg-[var(--success)]"
+                              : "bg-[var(--accent)]"
                           } shadow-[0_0_16px_rgba(245,166,95,0.55)]`}
                         />
                       </div>
@@ -183,9 +222,9 @@ export default function Home() {
                     <p className="section-label">Execution rail</p>
                     <div className="mt-4 space-y-3">
                       {[
-                        "Unlock portal vault",
-                        "Resolve required fields",
-                        "Link proposal evidence",
+                        "Unlock scoped portal access",
+                        "Resolve required bid fields",
+                        "Attach proposal evidence",
                         "Park on final review",
                       ].map((step, index) => (
                         <div
@@ -205,10 +244,10 @@ export default function Home() {
                     <p className="section-label">Trust boundary</p>
                     <div className="mt-4 space-y-4 text-sm leading-7 text-white/58">
                       <p>Scoped credentials, replay logs, approval gates.</p>
-                      <p>No hidden submit. No fake screenshots. No toy chat loop.</p>
+                      <p>No hidden submit. No silent payment. No toy chatbot loop.</p>
                       <p>
-                        Exactly the kind of ugly, live-web labor TinyFish was
-                        built to make executable.
+                        Exactly the last-mile portal work proposal teams still
+                        do by hand.
                       </p>
                     </div>
                   </div>
@@ -241,14 +280,15 @@ export default function Home() {
       <section id="workflow" className="px-6 py-24 lg:px-10 lg:py-[7.5rem]">
         <div className="mx-auto grid max-w-7xl gap-14 lg:grid-cols-[0.84fr_1.16fr]">
           <div className="lg:sticky lg:top-10 lg:self-start">
-            <p className="section-label">operator model</p>
+            <p className="section-label">winning wedge</p>
             <h2 className="mt-5 max-w-xl text-5xl font-medium leading-[1.02] tracking-[-0.05em] text-white">
-              Every useful web agent needs a crisp mandate.
+              One buyer. One painful workflow. One obvious reason to pay.
             </h2>
             <p className="mt-6 max-w-xl text-lg leading-8 text-white/58">
-              The difference between a trustworthy operator and a flashy demo is
-              the boundary: scoped authority, live execution, and a deliberate
-              pause at the approval edge.
+              BidPilot is sharpest when it behaves like proposal operations
+              software, not a general AI agent. The motion is simple: recover
+              labor from repetitive public-sector portal work while keeping the
+              final decision with the human owner.
             </p>
           </div>
 
@@ -273,16 +313,70 @@ export default function Home() {
         </div>
       </section>
 
+      <section id="economics" className="px-6 pb-24 lg:px-10 lg:pb-[7.5rem]">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.86fr_1.14fr]">
+          <div className="space-y-4">
+            {buyerSignals.map((signal) => (
+              <div
+                key={signal.label}
+                className="rounded-[1.6rem] border border-white/10 bg-black/20 p-6"
+              >
+                <p className="section-label">{signal.label}</p>
+                <h3 className="mt-4 text-2xl font-medium text-white">
+                  {signal.title}
+                </h3>
+                <p className="mt-4 text-base leading-8 text-white/56">
+                  {signal.detail}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="space-y-6">
+            <RoiCalculator />
+
+            <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-black/20 p-6 backdrop-blur-xl lg:p-7">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <p className="section-label">trust stack</p>
+                  <h3 className="mt-3 text-2xl font-medium text-white">
+                    The product only works if the handoff is trusted
+                  </h3>
+                </div>
+                <span className="signal-face text-xs uppercase tracking-[0.28em] text-[var(--accent)]">
+                  approval-first
+                </span>
+              </div>
+
+              <div className="mt-8 grid gap-4 md:grid-cols-3">
+                {trustRails.map((rail) => (
+                  <div
+                    key={rail.label}
+                    className="rounded-[1.25rem] border border-white/8 bg-white/[0.03] p-4"
+                  >
+                    <p className="section-label">{rail.label}</p>
+                    <p className="mt-3 text-sm leading-7 text-white/58">
+                      {rail.detail}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="console" className="px-6 pb-24 lg:px-10 lg:pb-[7.5rem]">
         <div className="mx-auto max-w-7xl">
           <div className="mb-12 max-w-3xl">
             <p className="section-label">interactive prototype</p>
             <h2 className="mt-5 text-5xl font-medium leading-[1.02] tracking-[-0.05em] text-white">
-              A command surface designed for the hackathon demo camera.
+              A command surface designed to show real proposal labor.
             </h2>
             <p className="mt-6 text-lg leading-8 text-white/58">
-              Switch between high-value workflows, relaunch the run, and show a
-              replayable path from authenticated login to human-approved draft.
+              Switch between the primary bid workflow and adjacent expansion
+              paths, relaunch the run, and show a replayable path from scoped
+              access to human-approved draft.
             </p>
           </div>
 
@@ -291,12 +385,13 @@ export default function Home() {
           <div className="mt-[4.5rem] max-w-3xl">
             <p className="section-label">runtime bridge</p>
             <h2 className="mt-5 text-5xl font-medium leading-[1.02] tracking-[-0.05em] text-white">
-              Flip from demo mode to real TinyFish runs without rebuilding the UI.
+              Flip from demo mode to real TinyFish runs without changing the product.
             </h2>
             <p className="mt-6 text-lg leading-8 text-white/58">
               The launch pad below is wired to real route handlers. Drop in a
               `TINYFISH_API_KEY`, launch a run, and the app will poll TinyFish for
-              live status, recent steps, and the result payload.
+              live status, recent steps, and the result payload while enforcing a
+              read-only or draft-save execution policy.
             </p>
           </div>
 
@@ -312,12 +407,12 @@ export default function Home() {
           <div className="mt-5 grid gap-10 lg:grid-cols-[1fr_auto] lg:items-end">
             <div>
               <h2 className="max-w-3xl text-5xl font-medium leading-[1.02] tracking-[-0.05em] text-white">
-                Show the portal. Show the work. Post the raw run.
+                Show the portal. Show the labor. Stop at approval.
               </h2>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-white/62">
                 This concept is strongest when the audience watches the agent do
-                boring, high-value labor on a live website. Keep the demo honest,
-                scoped, and impossible to confuse with a chatbot.
+                boring, high-value portal work on a live website. Keep the demo
+                honest, scoped, and impossible to confuse with generic AI chat.
               </p>
             </div>
 

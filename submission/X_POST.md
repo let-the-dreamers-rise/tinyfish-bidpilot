@@ -11,7 +11,7 @@ Why this matters:
 - the painful last mile is still manual browser work
 - that work repeats every bid cycle
 
-Live app: `PASTE_PUBLIC_APP_URL_HERE`
+Live app: https://tinyfish-bidpilot-puxfju1tx-ashwin-goyals-projects.vercel.app
 GitHub: https://github.com/let-the-dreamers-rise/tinyfish-bidpilot
 
 @Tiny_fish
@@ -22,7 +22,7 @@ Built **BidPilot** on TinyFish: an approval-gated submission agent for proposal 
 
 It handles real portal work on the live web, extracts requirements, maps evidence, saves the draft, and stops before final submit.
 
-Live app: `PASTE_PUBLIC_APP_URL_HERE`
+Live app: https://tinyfish-bidpilot-puxfju1tx-ashwin-goyals-projects.vercel.app
 Repo: https://github.com/let-the-dreamers-rise/tinyfish-bidpilot
 
 @Tiny_fish

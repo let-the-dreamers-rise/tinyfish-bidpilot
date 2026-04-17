@@ -11,13 +11,13 @@ const currency = new Intl.NumberFormat("en-US", {
 const number = new Intl.NumberFormat("en-US");
 
 export function RoiCalculator() {
-  const [bidsPerMonth, setBidsPerMonth] = useState(8);
-  const [hoursPerBid, setHoursPerBid] = useState(25);
-  const [hourlyCost, setHourlyCost] = useState(85);
+  const [packetsPerMonth, setPacketsPerMonth] = useState(18);
+  const [hoursPerPacket, setHoursPerPacket] = useState(6);
+  const [hourlyCost, setHourlyCost] = useState(65);
   const [automationCoverage, setAutomationCoverage] = useState(70);
 
   const recoveredHours =
-    bidsPerMonth * hoursPerBid * (automationCoverage / 100);
+    packetsPerMonth * hoursPerPacket * (automationCoverage / 100);
   const monthlySavings = recoveredHours * hourlyCost;
   const annualSavings = monthlySavings * 12;
 
@@ -27,35 +27,39 @@ export function RoiCalculator() {
         <div>
           <p className="section-label">ROI model</p>
           <h3 className="mt-3 text-2xl font-medium text-white">
-            Show the labor this agent removes
+            Show the supplier-ops labor this removes
           </h3>
         </div>
         <span className="signal-face text-xs uppercase tracking-[0.28em] text-[var(--accent)]">
-          proposal ops
+          vendor onboarding
         </span>
       </div>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
         <label className="block">
-          <span className="section-label">bids per month</span>
+          <span className="section-label">packets per month</span>
           <input
             type="number"
             min={1}
-            max={40}
-            value={bidsPerMonth}
-            onChange={(event) => setBidsPerMonth(Number(event.target.value) || 1)}
+            max={80}
+            value={packetsPerMonth}
+            onChange={(event) =>
+              setPacketsPerMonth(Number(event.target.value) || 1)
+            }
             className="mt-3 w-full rounded-[1.1rem] border border-white/10 bg-black/25 px-4 py-3 text-sm text-white outline-none transition focus:border-[var(--accent)]"
           />
         </label>
 
         <label className="block">
-          <span className="section-label">hours per bid</span>
+          <span className="section-label">hours per packet</span>
           <input
             type="number"
             min={1}
-            max={80}
-            value={hoursPerBid}
-            onChange={(event) => setHoursPerBid(Number(event.target.value) || 1)}
+            max={24}
+            value={hoursPerPacket}
+            onChange={(event) =>
+              setHoursPerPacket(Number(event.target.value) || 1)
+            }
             className="mt-3 w-full rounded-[1.1rem] border border-white/10 bg-black/25 px-4 py-3 text-sm text-white outline-none transition focus:border-[var(--accent)]"
           />
         </label>
@@ -112,7 +116,7 @@ export function RoiCalculator() {
             {currency.format(annualSavings)}
           </p>
           <p className="mt-2 text-sm leading-7 text-white/54">
-            from one proposal team
+            from one vendor ops pod
           </p>
         </div>
       </div>

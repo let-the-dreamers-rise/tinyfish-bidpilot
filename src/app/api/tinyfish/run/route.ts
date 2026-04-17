@@ -4,6 +4,7 @@ import {
   BIDPILOT_DEMO_CODE_ERROR,
   requestHasValidBidPilotDemoCode,
 } from "@/lib/demo-access";
+import { createClient } from "@/lib/supabase/server";
 import {
   launchTinyFishRun,
   type BrowserProfile,
@@ -14,6 +15,7 @@ type SafetyMode = "read-only" | "draft-save";
 
 type TinyFishLaunchRequest = Partial<TinyFishLaunchInput> & {
   safetyMode?: SafetyMode;
+  packetId?: string;
 };
 
 const isBrowserProfile = (value: string): value is BrowserProfile =>
@@ -78,6 +80,61 @@ export async function POST(request: Request) {
         { error: "TinyFish did not return a run_id." },
         { status: 502 },
       );
+    }
+
+    // Persist run to database if user is authenticated
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      const { data: profile } = (await supabase
+        .from("profiles")
+        .select("team_id, full_name")
+        .eq("id", user.id)
+        .single()) as { data: { team_id: string; full_name: string | null } | null };
+
+      if (profile?.team_id) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: runRecord } = (await (supabase
+          .from("tinyfish_runs") as any)
+          .insert({
+            team_id: profile.team_id,
+            packet_id: body.packetId || null,
+            tf_run_id: response.run_id,
+            goal: body.goal,
+            url: body.url,
+            safety_mode: safetyMode,
+            browser_profile: browserProfile,
+            status: "pending",
+            started_by: user.id,
+          })
+          .select()
+          .single()) as { data: any };
+
+        // Audit log
+        await (supabase.from("audit_entries") as any).insert({
+          team_id: profile.team_id,
+          packet_id: body.packetId || null,
+          run_id: runRecord?.id || null,
+          action: "TinyFish run launched",
+          detail: `${safetyMode} run started targeting ${body.url}`,
+          actor_id: user.id,
+          actor_name: profile.full_name || user.email,
+        });
+
+        // Update packet status if linked
+        if (body.packetId) {
+          await (supabase
+            .from("vendor_packets") as any)
+            .update({
+              status: "running",
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", body.packetId);
+        }
+      }
     }
 
     return NextResponse.json({

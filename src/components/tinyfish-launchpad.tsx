@@ -33,33 +33,6 @@ const DEMO_CODE_HEADER = "x-bidpilot-demo-code";
 
 const presets: LaunchPreset[] = [
   {
-    id: "bid",
-    label: "Public bid",
-    url: "https://bidnet.com",
-    goal:
-      "Open BidNet, locate the vendor login and primary active-bids search entry points, capture the visible landing-page call-to-action labels, and stop without logging in, submitting anything, or modifying data.",
-    recommendedMode: "read-only",
-    recommendedVault: false,
-  },
-  {
-    id: "security",
-    label: "Security review",
-    url: "https://trust.openai.com",
-    goal:
-      "Open the trust center, identify the main security and compliance entry points, capture the visible trust navigation labels, and stop without logging in or modifying anything.",
-    recommendedMode: "read-only",
-    recommendedVault: false,
-  },
-  {
-    id: "supplier",
-    label: "Supplier onboarding",
-    url: "https://supplier.ariba.com",
-    goal:
-      "Sign in to the supplier portal, navigate profile, tax, and insurance sections, upload the required documents, save the supplier draft, and stop before final activation for human approval.",
-    recommendedMode: "draft-save",
-    recommendedVault: true,
-  },
-  {
     id: "sandbox",
     label: "Portal sandbox",
     url: "https://tinyfish-bidpilot.vercel.app/portal-demo",
@@ -67,6 +40,24 @@ const presets: LaunchPreset[] = [
       "Open the Northstar Vendor Portal sandbox, sign in with any email and password, open the Documents tab, click 'attach sample capability statement', save the draft, and stop on the review state where final publish is locked.",
     recommendedMode: "draft-save",
     recommendedVault: false,
+  },
+  {
+    id: "supplier-audit",
+    label: "Supplier portal audit",
+    url: "https://supplier.ariba.com",
+    goal:
+      "Open the supplier portal landing page, identify the sign-in, registration, and company profile entry points that a vendor ops team would need, and stop without logging in or modifying anything.",
+    recommendedMode: "read-only",
+    recommendedVault: false,
+  },
+  {
+    id: "supplier",
+    label: "Supplier draft-save",
+    url: "https://supplier.ariba.com",
+    goal:
+      "Sign in to the supplier portal, navigate profile, tax, and insurance sections, upload the required onboarding documents, save the supplier draft, and stop before final activation for human approval.",
+    recommendedMode: "draft-save",
+    recommendedVault: true,
   },
 ];
 
@@ -258,6 +249,8 @@ export function TinyFishLaunchpad() {
       : run?.status === "FAILED" || run?.status === "CANCELLED"
         ? "text-[#ff8b7b]"
         : "text-[var(--accent)]";
+  const showSandboxReviewLink =
+    selectedPresetId === "sandbox" && run?.status === "COMPLETED";
 
   return (
     <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-black/20 backdrop-blur-xl">
@@ -267,7 +260,7 @@ export function TinyFishLaunchpad() {
             <div>
               <p className="section-label">live launch pad</p>
               <h3 className="mt-3 text-2xl font-medium text-white">
-                Trigger a real TinyFish run
+                Trigger an external portal run
               </h3>
             </div>
             <span
@@ -314,7 +307,7 @@ export function TinyFishLaunchpad() {
                 onChange={(event) => setGoal(event.target.value)}
                 rows={6}
                 className="mt-3 w-full rounded-[1.1rem] border border-white/10 bg-black/25 px-4 py-3 text-sm leading-7 text-white outline-none transition focus:border-[var(--accent)]"
-                placeholder="Describe what the agent should do on the live web."
+                placeholder="Describe the external supplier portal work the agent should complete."
               />
             </label>
 
@@ -363,6 +356,16 @@ export function TinyFishLaunchpad() {
               <p className="section-label">guardrails</p>
               <p className="mt-3 text-sm leading-7 text-white/58">
                 {guardrailCopy}
+              </p>
+            </div>
+
+            <div className="rounded-[1rem] border border-white/8 bg-black/20 px-4 py-4">
+              <p className="section-label">packet context</p>
+              <p className="mt-3 text-sm leading-7 text-white/58">
+                BidPilot should only launch TinyFish after the vendor packet is
+                ready: company profile confirmed, required artifacts attached,
+                and approval owner known. The browser run is the execution
+                layer, not the whole product.
               </p>
             </div>
 
@@ -417,9 +420,9 @@ export function TinyFishLaunchpad() {
                 />
                 <p className="mt-3 text-sm leading-7 text-white/50">
                   Pass TinyFish Vault credential item IDs here for authenticated
-                  draft-save workflows. Separate multiple IDs with commas, or
-                  leave this blank to let TinyFish use all eligible enabled
-                  Vault items.
+                  draft-save workflows such as supplier onboarding. Separate
+                  multiple IDs with commas, or leave this blank to let TinyFish
+                  use all eligible enabled Vault items.
                 </p>
               </label>
             ) : null}
@@ -428,9 +431,9 @@ export function TinyFishLaunchpad() {
               <div className="rounded-[1rem] border border-[rgba(245,166,95,0.18)] bg-[rgba(245,166,95,0.08)] px-4 py-4">
                 <p className="section-label">draft-save checklist</p>
                 <div className="mt-3 space-y-2 text-sm leading-7 text-white/60">
-                  <p>1. Use a real portal account through TinyFish Vault.</p>
-                  <p>2. Upload one supporting file to prove real labor.</p>
-                  <p>3. Save the draft and stop before final submit.</p>
+                  <p>1. Start from a complete vendor packet, not raw prompts.</p>
+                  <p>2. Use a real portal account through TinyFish Vault.</p>
+                  <p>3. Upload supporting files, save the draft, and stop before final submit.</p>
                 </div>
               </div>
             ) : null}
@@ -524,7 +527,7 @@ export function TinyFishLaunchpad() {
                   <div>
                     <p className="section-label">human handoff</p>
                     <p className="mt-3 text-sm text-white/68">
-                      capture lead approval required
+                      vendor ops approval required
                     </p>
                   </div>
                   <div>
@@ -561,8 +564,9 @@ export function TinyFishLaunchpad() {
                   </div>
                   <p className="mt-3 text-sm leading-7 text-white/56">
                     BidPilot keeps the run readable inside this panel using
-                    TinyFish polling, so you can follow step progress, status,
-                    and results without relying on an external stream tab.
+                    TinyFish polling, so the operator can inspect portal
+                    progress, handoff state, and final results without leaving
+                    the workspace.
                   </p>
                 </div>
 
@@ -594,6 +598,23 @@ export function TinyFishLaunchpad() {
                     {JSON.stringify(run.result ?? {}, null, 2)}
                   </pre>
                 </div>
+
+                {showSandboxReviewLink ? (
+                  <div className="rounded-[1rem] border border-[rgba(245,166,95,0.18)] bg-[rgba(245,166,95,0.08)] px-4 py-4">
+                    <p className="section-label">review handoff</p>
+                    <p className="mt-3 text-sm leading-7 text-white/60">
+                      The sandbox workflow completed. Open the saved review
+                      state to inspect the approval boundary exactly as the
+                      operator would see it.
+                    </p>
+                    <a
+                      href="/portal-demo?state=draft-saved&doc=capability-statement.pdf"
+                      className="ghost-button mt-4"
+                    >
+                      open saved draft
+                    </a>
+                  </div>
+                ) : null}
               </div>
             ) : (
               <p className="text-sm leading-7 text-white/56">

@@ -1,80 +1,87 @@
 # BidPilot
 
-BidPilot turns proposal operations into executable web labor.
+**Supplier Portal Automation for Procurement Teams**
 
-It is a TinyFish-native Next.js app for teams that lose hours to portal work: opening procurement sites, locating bid entry points, navigating multi-step forms, and pushing toward submission-ready drafts. The product pairs a cinematic landing page with a real TinyFish launch pad so the demo can tell a strong story and also perform live work on the web.
+BidPilot turns vendor onboarding into executable web labor. Build your vendor packet once — BidPilot's AI agent fills every supplier portal, uploads your documents, and saves the draft. Your team reviews before anything goes live.
 
 ## Live Links
 
-- App: https://tinyfish-bidpilot-puxfju1tx-ashwin-goyals-projects.vercel.app
-- Repo: https://github.com/let-the-dreamers-rise/tinyfish-bidpilot
+- **App:** https://tinyfish-bidpilot-puxfju1tx-ashwin-goyals-projects.vercel.app
+- **Product Tour:** https://tinyfish-bidpilot-puxfju1tx-ashwin-goyals-projects.vercel.app/demo
+- **Repo:** https://github.com/let-the-dreamers-rise/tinyfish-bidpilot
 
-## Why This Exists
+## The Problem
 
-Most AI demos stop at drafting. Real operations teams still have to do the ugly last-mile browser work themselves:
+Enterprise procurement teams spend 6+ hours per vendor filling supplier portals like Ariba, Coupa, and Jaggaer. It's repetitive, error-prone, and impossible to scale. The "last mile" of procurement — the actual portal work — is still entirely manual.
 
-- log in to web portals
-- find the right section
-- carry context across multiple screens
-- upload the right files
-- save progress and stop at approval
+## The Solution
 
-BidPilot is built around the idea that proposal software should not just suggest answers. It should actually move through the live web and get work done.
+BidPilot separates preparation from execution:
 
-## What The App Does
+1. **Build the packet** — Collect legal details, tax forms, insurance, and compliance documents in one reusable vendor packet
+2. **Launch the agent** — TinyFish navigates the live portal, fills every field, uploads attachments, and saves the draft
+3. **Review and approve** — Your team inspects the saved draft before any final submission is allowed
 
-- presents a bold landing page for hackathon demos, judge walkthroughs, and product storytelling
-- simulates an operator console for safe narrative framing even when you do not want to spend live credits
-- launches real TinyFish runs through a server-side API layer
-- polls run status, recent steps, and final result payloads in the UI
-- supports stealth or lite browser profiles, `read-only` and `draft-save` execution policies, proxy configuration, and optional TinyFish Vault credentials
+## Product Architecture
 
-## Product Surfaces
+| Layer | Technology |
+|---|---|
+| Frontend | Next.js 16 App Router, React 19, Tailwind CSS 4 |
+| Auth | Supabase Auth with session management |
+| Database | Supabase Postgres with Row-Level Security on all 7 tables |
+| Storage | Supabase Storage with encrypted document vault |
+| Payments | Razorpay (PCI DSS compliant) |
+| Automation | TinyFish — 4 APIs under one key |
+| Deployment | Vercel (Edge Network) |
 
-### 1. Landing Experience
+## TinyFish Integration — All 4 APIs
 
-The homepage positions BidPilot as a portal automation system for bids, security questionnaires, and onboarding-heavy workflows.
+BidPilot uses every TinyFish API product under a single API key:
 
-### 2. Operator Console
+| API | Endpoint | Used For |
+|---|---|---|
+| **Web Search** | `search.tinyfish.ai` | Discover RFPs, vendor registrations, and procurement opportunities |
+| **Web Fetch** | `fetch.tinyfish.ai` | Extract portal requirements, form fields, and compliance signals |
+| **Web Agent** | `agent.tinyfish.ai` | Navigate portals, fill forms, upload documents, save drafts |
+| **Web Browser** | `browser.tinyfish.ai` | Stealth browser sessions for authenticated portal inspection |
 
-The operator console gives you a cinematic command-deck feel for pitch videos and live walkthroughs.
+## API Surface
 
-### 3. TinyFish Launch Pad
+| Endpoint | Method | Purpose |
+|---|---|---|
+| `/api/tinyfish/config` | GET | Check if live mode is enabled |
+| `/api/tinyfish/run` | POST | Launch an asynchronous TinyFish agent run |
+| `/api/tinyfish/run/[id]` | GET | Poll run status, steps, and results |
+| `/api/tinyfish/search` | GET | Search the web via TinyFish Search |
+| `/api/tinyfish/fetch` | POST | Extract content from URLs via TinyFish Fetch |
+| `/api/tinyfish/browser` | POST | Create a browser session via TinyFish Browser |
+| `/api/payments/razorpay` | POST | Create a Razorpay order for subscription |
+| `/api/payments/razorpay/verify` | POST | Verify payment signature and upgrade plan |
+| `/api/packets` | GET/POST | List and create vendor packets |
+| `/api/packets/[id]` | GET/PATCH/DELETE | Manage individual packets |
+| `/api/packets/[id]/documents` | GET/POST | Manage packet documents |
 
-The launch pad is the real engine. It accepts a target URL and goal, starts an asynchronous TinyFish automation run, and streams the status back into the app.
+## Dashboard Pages
 
-## Verified Live Run
+| Page | Description |
+|---|---|
+| **Overview** | Real-time metrics from Supabase — packets, runs, documents, activity feed |
+| **Packets** | Create, manage, and track vendor onboarding packets |
+| **Runs** | Monitor TinyFish agent executions with live polling |
+| **Audit** | Immutable log of every action taken by human or agent |
+| **Portal Intel** | Learned patterns from TinyFish executions across portals |
+| **Discover** | Search the live web for procurement opportunities (Web Search + Web Fetch) |
+| **Scanner** | Scan any portal URL to extract requirements and launch browser sessions |
+| **Settings** | Team, profile, and integration management |
 
-A real smoke test was successfully completed against `https://bidnet.com` through this app.
+## Security
 
-The agent:
-
-- opened BidNet
-- located the vendor login entry point
-- identified the primary bid-search entry point
-- extracted visible call-to-action labels from the landing page
-- stopped without logging in, submitting anything, or modifying data
-
-This proves the full path is live:
-
-`BidPilot UI -> Next.js API routes -> TinyFish API -> live run polling -> result payload`
-
-## Architecture
-
-- frontend: Next.js 16 App Router, React 19, Tailwind CSS 4
-- server routes: `/api/tinyfish/config`, `/api/tinyfish/run`, `/api/tinyfish/run/[id]`
-- TinyFish client: typed wrapper for async run creation and run polling
-- deployment: Vercel
-- source control: GitHub
-
-## Core Flow
-
-1. The UI asks the local API whether TinyFish is enabled.
-2. When live mode is enabled, the user launches a run with a target URL and goal.
-3. The server route forwards the request to TinyFish using `X-API-Key`.
-4. TinyFish returns a `run_id`.
-5. The UI polls the run endpoint until it reaches a terminal state.
-6. The user sees status, recent actions, and the final result payload.
+- **Encryption:** AES-256 at rest, TLS 1.3 in transit
+- **Auth:** Supabase Auth with middleware-enforced session checks
+- **Database:** Row-Level Security policies on every table
+- **Credentials:** TinyFish Vault — portal passwords never touch our servers
+- **Execution Policy:** Read-only or draft-save modes by default. No irreversible actions without human approval.
+- **Audit:** Immutable audit trail of every action
 
 ## Environment Variables
 
@@ -83,93 +90,43 @@ Create `.env.local` from `.env.example` and set:
 ```env
 TINYFISH_API_KEY=your_tinyfish_key
 TINYFISH_API_BASE=https://agent.tinyfish.ai/v1
+BIDPILOT_DEMO_CODE=optional_access_code
+
+RAZORPAY_KEY_ID=your_razorpay_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_key_secret
+
+NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_ANON_KEY
 ```
-
-Important:
-
-- keep `TINYFISH_API_KEY` server-side only
-- do not prefix it with `NEXT_PUBLIC_`
-- the app falls back to demo mode when the key is missing
 
 ## Local Setup
 
-1. Install dependencies:
-
 ```bash
 npm install
-```
-
-2. Copy the env template:
-
-```bash
 cp .env.example .env.local
-```
-
-3. Add your TinyFish key to `.env.local`.
-
-4. Start the app:
-
-```bash
+# Add your keys to .env.local
 npm run dev
+# Open http://localhost:3000
 ```
-
-5. Open:
-
-```bash
-http://localhost:3000
-```
-
-## API Surface
-
-- `GET /api/tinyfish/config`
-  Returns whether live mode is enabled and the default browser settings.
-
-- `POST /api/tinyfish/run`
-  Starts a TinyFish async run using the submitted URL, goal, browser profile, execution policy, proxy configuration, vault toggle, and optional TinyFish Vault credential item IDs.
-
-- `GET /api/tinyfish/run/[id]`
-  Polls a single TinyFish run and returns its latest status, steps, stream link, and result payload.
-
-## Demo Strategy
-
-For a low-risk live demo:
-
-- use the verified BidNet preset first
-- show the run ID and status changes in real time
-- open the result payload to prove the agent actually did browser work
-- keep credentialed flows for a second demo after the smoke test succeeds
 
 ## Deployment
 
-The app is deployed on Vercel and linked to the GitHub repository above. TinyFish environment variables are configured on Vercel for development, preview, and production environments.
+The app is deployed on Vercel and linked to the GitHub repository. All environment variables are configured on Vercel for development, preview, and production environments.
 
 ## Submission Assets
 
-The repo includes a ready-to-use submission pack in `submission/`:
+The repo includes ready-to-use assets in `submission/`:
 
-- `HACKEREARTH_SUBMISSION.md`
-- `X_POST.md`
-- `DEMO_CHECKLIST.md`
-- `PILOT_OUTREACH.md`
-
-## Security Notes
-
-- never commit `.env.local`
-- rotate the TinyFish API key if it is ever shared publicly
-- keep destructive or credentialed automations behind deliberate human approval steps
+- `LOI_TEMPLATE.md` — Non-binding Letter of Intent for pilot customers
+- `OUTREACH_TEMPLATES.md` — LinkedIn, email, and objection-handling scripts
+- `DEMO_CHECKLIST.md` — Pre-demo verification steps
+- `PILOT_OUTREACH.md` — Pilot program details
+- `capability-statement.pdf` — Company capability statement
 
 ## Validation
 
-The project has been validated with:
-
-- `npm run lint`
-- `npm run build`
-- a real TinyFish smoke test completed through the local app
-- a live Vercel deployment
-
-## Next Steps
-
-- add domain branding and a custom demo video
-- introduce saved workflow templates per portal
-- add approval checkpoints before final submit
-- support credentialed TinyFish Vault flows for real customer portals
+- `npm run build` — passes clean
+- `npx tsc --noEmit` — zero type errors
+- Real TinyFish smoke test completed through the live app
+- Live Vercel deployment verified
+- All 4 TinyFish APIs tested and integrated

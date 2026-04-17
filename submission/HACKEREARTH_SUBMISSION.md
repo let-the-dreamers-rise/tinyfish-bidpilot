@@ -10,8 +10,8 @@ BidPilot is the approval-gated submission agent for proposal teams working insid
 
 ## Public Links
 
-- X post: `PASTE_X_POST_URL_HERE`
-- Live app: `PASTE_PUBLIC_APP_URL_HERE`
+- X post: https://x.com/ashgoyal1990
+- Live app: https://tinyfish-bidpilot-puxfju1tx-ashwin-goyals-projects.vercel.app
 - GitHub repo: https://github.com/let-the-dreamers-rise/tinyfish-bidpilot
 
 ## Business Case

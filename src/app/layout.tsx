@@ -16,9 +16,9 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BidPilot | TinyFish Portal Automation",
+  title: "BidPilot | Supplier Portal Execution for Vendor Ops",
   description:
-    "A TinyFish-native command deck for live web automation across bids, portals, and approval-heavy workflows.",
+    "BidPilot is an approval-gated execution layer for external supplier portals, built on TinyFish for vendor onboarding and procurement ops teams.",
 };
 
 export default function RootLayout({

@@ -14,7 +14,11 @@ export async function GET(request: Request) {
     if (!error) {
       return NextResponse.redirect(`${origin}${redirect}`);
     }
+    
+    // Pass the actual error message back to the sign-in page so we can debug it
+    const errorMessage = error?.message ? encodeURIComponent(error.message) : "auth_callback_failed";
+    return NextResponse.redirect(`${origin}/sign-in?error=${errorMessage}`);
   }
 
-  return NextResponse.redirect(`${origin}/sign-in?error=auth_callback_failed`);
+  return NextResponse.redirect(`${origin}/sign-in?error=no_code_provided`);
 }

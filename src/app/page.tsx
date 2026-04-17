@@ -1,7 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { RoiCalculator } from "@/components/roi-calculator";
-import { TinyFishLaunchpad } from "@/components/tinyfish-launchpad";
 
 const signalLanes = [
   {
@@ -70,9 +70,7 @@ export default function Home() {
         <header className="absolute inset-x-0 top-0 z-20">
           <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6 lg:px-10">
             <div className="flex items-center gap-4">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[rgba(245,166,95,0.35)] bg-[rgba(245,166,95,0.08)] text-sm font-semibold text-[var(--accent)]">
-                BP
-              </span>
+              <Image src="/bidpilot-logo.png" alt="BidPilot" width={44} height={44} className="rounded-full" />
               <div>
                 <p className="text-sm font-medium text-white">BidPilot</p>
                 <p className="signal-face text-[10px] uppercase tracking-[0.32em] text-white/38">
@@ -251,24 +249,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Launchpad */}
-      <section id="launchpad" className="px-6 pb-24 lg:px-10 lg:pb-[7.5rem]">
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-12 max-w-3xl">
-            <p className="section-label">execution layer</p>
-            <h2 className="mt-5 text-5xl font-medium leading-[1.02] tracking-[-0.05em] text-white">
-              TinyFish is the runtime. BidPilot is the operating surface.
-            </h2>
-            <p className="mt-6 text-lg leading-8 text-white/58">
-              The launch pad below stays intentionally close to the real API flow
-              so you can prove that the browser work is happening on a live
-              website.
-            </p>
-          </div>
 
-          <TinyFishLaunchpad />
-        </div>
-      </section>
 
       {/* Enterprise metrics */}
       <section className="px-6 pb-24 lg:px-10 lg:pb-[7.5rem]">
@@ -354,9 +335,7 @@ export default function Home() {
       <footer className="border-t border-white/8 bg-black/40 py-12">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-6 sm:flex-row lg:px-10">
           <div className="flex items-center gap-3">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[rgba(245,166,95,0.35)] bg-[rgba(245,166,95,0.08)] text-[10px] font-semibold text-[var(--accent)]">
-              BP
-            </span>
+            <Image src="/bidpilot-logo.png" alt="BidPilot" width={32} height={32} className="rounded-full" />
             <span className="text-sm text-white/40">
               BidPilot © {new Date().getFullYear()}
             </span>

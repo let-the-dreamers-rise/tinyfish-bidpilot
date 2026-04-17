@@ -136,7 +136,7 @@ const steps = [
       "Start free with 5 vendor packets. Upgrade when your onboarding volume demands it. Enterprise plans include SSO, custom portal adapters, and a dedicated success manager.",
     tiers: [
       { name: "Starter", price: "Free", highlight: false, desc: "5 packets, 10 runs, 1 user" },
-      { name: "Pro", price: "₹6,499/mo", highlight: true, desc: "Unlimited packets, 100 runs, 5 users" },
+      { name: "Pro", price: "₹6,500/mo", highlight: true, desc: "Unlimited packets, 100 runs, 5 users" },
       { name: "Enterprise", price: "Custom", highlight: false, desc: "Unlimited everything, SSO, SLA" },
     ],
     visual: "pricing",
@@ -447,13 +447,13 @@ export default function DemoPage() {
                 {current.id === "pricing" && (
                   <div className="space-y-4">
                     <div className="rounded-lg border border-[var(--accent)]/20 bg-[var(--accent)]/5 p-4 text-center">
-                      <p className="text-sm font-medium text-white">Pro Plan — ₹6,499/mo</p>
+                      <p className="text-sm font-medium text-white">Pro Plan — ₹6,500/mo</p>
                       <p className="mt-2 text-xs text-white/40">Unlimited packets · 100 runs · 5 team members</p>
                       <div className="mt-4 flex items-center justify-center gap-2">
                         <svg className="h-4 w-4 text-[var(--success)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                         </svg>
-                        <span className="text-xs text-white/40">Secured by Razorpay · PCI DSS compliant</span>
+                        <span className="text-xs text-white/40">Secured by Lemon Squeezy · PCI DSS compliant</span>
                       </div>
                     </div>
                   </div>

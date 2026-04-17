@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import RazorpayCheckout from "@/components/razorpay-checkout";
+import LemonSqueezyCheckout from "@/components/lemonsqueezy-checkout";
 
 const plans = [
   {
@@ -20,11 +20,11 @@ const plans = [
     ],
     cta: "Get started free",
     href: "/sign-up",
-    razorpayPlan: null,
+    checkoutUrl: null,
   },
   {
     name: "Pro",
-    price: "₹6,499",
+    price: "₹6,500",
     period: "/month",
     description: "For ops teams running weekly onboardings.",
     highlight: true,
@@ -40,7 +40,7 @@ const plans = [
     ],
     cta: "Start 14-day trial",
     href: "/sign-up?plan=pro",
-    razorpayPlan: "pro",
+    checkoutUrl: process.env.NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL_PRO || null,
   },
   {
     name: "Enterprise",
@@ -60,7 +60,7 @@ const plans = [
     ],
     cta: "Talk to sales",
     href: "mailto:ashwin@bidpilot.dev?subject=BidPilot%20Enterprise",
-    razorpayPlan: null,
+    checkoutUrl: null,
   },
 ];
 
@@ -87,7 +87,7 @@ const faqs = [
   },
   {
     q: "What payment methods are accepted?",
-    a: "We accept all major credit and debit cards, UPI, net banking, and wallets via Razorpay. International cards are supported.",
+    a: "We accept all major credit and debit cards via our secure payment partner Lemon Squeezy. International cards, Apple Pay, and Google Pay are supported.",
   },
 ];
 
@@ -167,9 +167,9 @@ export default function PricingPage() {
               </ul>
 
               {/* Payment button or link */}
-              {plan.razorpayPlan ? (
-                <RazorpayCheckout
-                  plan={plan.razorpayPlan}
+              {plan.checkoutUrl ? (
+                <LemonSqueezyCheckout
+                  checkoutUrl={plan.checkoutUrl}
                   label={plan.cta}
                   highlight={plan.highlight}
                 />
@@ -192,7 +192,7 @@ export default function PricingPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
             <span className="text-xs text-white/50">
-              Secured by <span className="font-medium text-white/70">Razorpay</span> · PCI DSS compliant
+              Secured by <span className="font-medium text-white/70">Lemon Squeezy</span> · PCI DSS compliant · 256-bit SSL
             </span>
           </div>
         </div>
@@ -208,7 +208,7 @@ export default function PricingPage() {
               { stat: "6 hours", label: "Manual onboarding time per vendor" },
               { stat: "18 min", label: "With BidPilot + TinyFish" },
               { stat: "95%", label: "Time reduction on portal work" },
-              { stat: "₹48L+", label: "Annual savings for a 10-person team" },
+              { stat: "$50K+", label: "Annual savings for a 10-person team" },
             ].map((item) => (
               <div key={item.label}>
                 <p className="text-3xl font-semibold text-[var(--accent)]">

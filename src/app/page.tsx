@@ -298,7 +298,7 @@ export default function Home() {
             <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-6">
               <p className="text-sm font-medium text-white">🏗️ Production Architecture</p>
               <p className="mt-2 text-xs leading-relaxed text-white/40">
-                Next.js 16 App Router · Supabase (Auth + Postgres + Storage) · Razorpay Payments · Vercel Edge Network · TinyFish Automation Runtime
+                Next.js 16 App Router · Supabase (Auth + Postgres + Storage) · Lemon Squeezy Payments · Vercel Edge Network · TinyFish Automation Runtime
               </p>
             </div>
             <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-6">
@@ -310,7 +310,7 @@ export default function Home() {
             <div className="rounded-2xl border border-white/8 bg-white/[0.02] p-6">
               <p className="text-sm font-medium text-white">💳 Revenue-Ready</p>
               <p className="mt-2 text-xs leading-relaxed text-white/40">
-                Razorpay checkout integrated · Tiered pricing (Free / Pro / Enterprise) · PCI DSS compliant payments · Subscription billing infrastructure
+                Lemon Squeezy checkout integrated · Tiered pricing (Free / Pro / Enterprise) · PCI DSS compliant payments · Subscription billing infrastructure
               </p>
             </div>
           </div>

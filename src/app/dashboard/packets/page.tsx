@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { CreatePacketDialog } from "@/components/create-packet-dialog";
+import { CreatePacketButton } from "./create-packet-button";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -75,9 +75,7 @@ export default async function PacketsPage() {
               {allPackets.length} vendor onboarding {allPackets.length === 1 ? "packet" : "packets"}
             </p>
           </div>
-          <Link href="/dashboard/packets?create=true" className="halo-button !py-2.5 !px-5 !text-[10px]">
-            + new packet
-          </Link>
+          <CreatePacketButton variant="header" />
         </div>
 
         {/* Packets grid */}
@@ -105,9 +103,7 @@ export default async function PacketsPage() {
                 Launch TinyFish to fill the portal automatically
               </div>
             </div>
-            <Link href="/dashboard/packets?create=true" className="halo-button mt-8">
-              create first packet
-            </Link>
+            <CreatePacketButton variant="empty_state" />
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">

@@ -82,9 +82,7 @@ export default function SignUpPage() {
   return (
     <div className="rounded-[2rem] border border-white/10 bg-black/25 p-8 backdrop-blur-xl">
       <div className="mb-8 text-center">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-[rgba(245,166,95,0.35)] bg-[rgba(245,166,95,0.08)]">
-          <span className="text-lg font-semibold text-[var(--accent)]">BP</span>
-        </div>
+        <img src="/bidpilot-logo.png" alt="BidPilot" width={56} height={56} className="mx-auto mb-4 rounded-full" />
         <h1 className="text-3xl font-medium tracking-[-0.03em] text-white">
           Start automating
         </h1>

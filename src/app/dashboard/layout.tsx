@@ -105,9 +105,7 @@ export default function DashboardLayout({
     <div className="flex h-full flex-col">
       {/* Logo */}
       <div className={`flex items-center gap-3 border-b border-white/8 px-5 py-5 ${collapsed ? "justify-center" : ""}`}>
-        <span className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-[rgba(245,166,95,0.35)] bg-[rgba(245,166,95,0.08)] text-xs font-semibold text-[var(--accent)]">
-          BP
-        </span>
+        <img src="/bidpilot-logo.png" alt="BidPilot" width={36} height={36} className="rounded-full flex-shrink-0" />
         {!collapsed && (
           <div className="min-w-0">
             <p className="text-sm font-medium text-white">BidPilot</p>

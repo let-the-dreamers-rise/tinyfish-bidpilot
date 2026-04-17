@@ -153,9 +153,7 @@ export default function DemoPage() {
       <header className="sticky top-0 z-30 border-b border-white/8 bg-[var(--background)]/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
           <Link href="/" className="flex items-center gap-3">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(245,166,95,0.35)] bg-[rgba(245,166,95,0.08)] text-xs font-semibold text-[var(--accent)]">
-              BP
-            </span>
+            <img src="/bidpilot-logo.png" alt="BidPilot" width={36} height={36} className="rounded-full" />
             <div>
               <p className="text-sm font-medium text-white">BidPilot</p>
               <p className="signal-face text-[9px] uppercase tracking-[0.3em] text-white/35">

@@ -33,7 +33,11 @@ function withSafetyGuardrails(goal: string, safetyMode: SafetyMode) {
 }
 
 export async function POST(request: Request) {
-  if (!requestHasValidBidPilotDemoCode(request)) {
+  // Bypass demo code for authenticated users — code is only for public traffic
+  const supabaseForAuth = await createClient();
+  const { data: { user: authUser } } = await supabaseForAuth.auth.getUser();
+
+  if (!authUser && !requestHasValidBidPilotDemoCode(request)) {
     return NextResponse.json(
       { error: BIDPILOT_DEMO_CODE_ERROR },
       { status: 401 },

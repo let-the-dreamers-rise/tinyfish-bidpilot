@@ -11,7 +11,11 @@ export async function GET(
   request: Request,
   context: { params: Promise<{ id: string }> },
 ) {
-  if (!requestHasValidBidPilotDemoCode(request)) {
+  // Bypass demo code for authenticated users
+  const supabaseForAuth = await createClient();
+  const { data: { user: authUser } } = await supabaseForAuth.auth.getUser();
+
+  if (!authUser && !requestHasValidBidPilotDemoCode(request)) {
     return NextResponse.json(
       { error: BIDPILOT_DEMO_CODE_ERROR },
       { status: 401 },

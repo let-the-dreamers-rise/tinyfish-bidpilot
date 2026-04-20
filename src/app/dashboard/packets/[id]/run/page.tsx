@@ -40,11 +40,21 @@ export default function PacketRunPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [runId, setRunId] = useState<string | null>(null);
   const [run, setRun] = useState<RunResult | null>(null);
+  const [demoCode, setDemoCode] = useState("");
+  const [needsDemoCode, setNeedsDemoCode] = useState(false);
   const [packetInfo, setPacketInfo] = useState<{
     vendor_name: string;
     portal_url: string;
     portal_name: string | null;
   } | null>(null);
+
+  // Check if demo code is required
+  useEffect(() => {
+    fetch("/api/tinyfish/config", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((cfg) => setNeedsDemoCode(Boolean(cfg.requiresDemoCode)))
+      .catch(() => {});
+  }, []);
 
   // Load packet info
   useEffect(() => {
@@ -76,6 +86,7 @@ export default function PacketRunPage() {
     try {
       const response = await fetch(`/api/tinyfish/run/${runId}`, {
         cache: "no-store",
+        headers: needsDemoCode ? { "x-bidpilot-demo-code": demoCode.trim() } : undefined,
       });
       const payload = (await response.json()) as RunResult & { error?: string };
       if (!response.ok) {
@@ -111,7 +122,10 @@ export default function PacketRunPage() {
     try {
       const response = await fetch("/api/tinyfish/run", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(needsDemoCode ? { "x-bidpilot-demo-code": demoCode.trim() } : {}),
+        },
         body: JSON.stringify({
           url,
           goal,
@@ -264,6 +278,24 @@ export default function PacketRunPage() {
                 <p className="mt-2 text-sm leading-7 text-white/50">{guardrailCopy}</p>
               </div>
 
+              {needsDemoCode && (
+                <label className="block">
+                  <span className="text-xs font-medium uppercase tracking-[0.2em] text-white/40">
+                    Demo Access Code
+                  </span>
+                  <input
+                    type="password"
+                    value={demoCode}
+                    onChange={(e) => setDemoCode(e.target.value)}
+                    className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-[var(--accent)]/50"
+                    placeholder="Enter your demo access code"
+                  />
+                  <p className="mt-1.5 text-xs text-white/25">
+                    Required to protect live TinyFish API credits from unauthorized use.
+                  </p>
+                </label>
+              )}
+
               {errorMessage && (
                 <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
                   {errorMessage}
@@ -272,7 +304,7 @@ export default function PacketRunPage() {
 
               <button
                 type="submit"
-                disabled={isSubmitting || !url}
+                disabled={isSubmitting || !url || (needsDemoCode && !demoCode.trim())}
                 className="halo-button w-full justify-center disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isSubmitting ? "launching..." : "🐟 launch tinyfish run"}

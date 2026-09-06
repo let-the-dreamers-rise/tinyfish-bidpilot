@@ -1,4 +1,4 @@
-import { createHmac } from "crypto";
+import { createHmac, timingSafeEqual } from "crypto";
 import { NextResponse, type NextRequest } from "next/server";
 
 /* -------------------------------------------------------------------------- */
@@ -12,15 +12,38 @@ export async function POST(request: NextRequest) {
     const signature = request.headers.get("x-signature");
     const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
 
-    /* Verify signature if we have a secret configured */
-    if (secret && signature) {
-      const hmac = createHmac("sha256", secret);
-      hmac.update(rawBody);
-      const digest = hmac.digest("hex");
+    /* Signature verification is mandatory. This endpoint grants paid access,
+       so it must never process an unverified payload — a missing secret is a
+       misconfiguration, not a reason to trust the caller. */
+    if (!secret) {
+      console.error(
+        "[LemonSqueezy] LEMONSQUEEZY_WEBHOOK_SECRET is not set — refusing to process webhook.",
+      );
+      return NextResponse.json(
+        { error: "Webhook not configured" },
+        { status: 503 },
+      );
+    }
 
-      if (digest !== signature) {
-        return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
-      }
+    if (!signature) {
+      return NextResponse.json({ error: "Missing signature" }, { status: 401 });
+    }
+
+    const digest = createHmac("sha256", secret).update(rawBody).digest();
+    let provided: Buffer;
+    try {
+      provided = Buffer.from(signature, "hex");
+    } catch {
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+    }
+
+    /* Compare in constant time. timingSafeEqual throws on length mismatch,
+       so guard the length first. */
+    if (
+      provided.length !== digest.length ||
+      !timingSafeEqual(provided, digest)
+    ) {
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 
     const payload = JSON.parse(rawBody);

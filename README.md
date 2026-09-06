@@ -30,7 +30,7 @@ BidPilot separates preparation from execution:
 | Auth | Supabase Auth with session management |
 | Database | Supabase Postgres with Row-Level Security on all 7 tables |
 | Storage | Supabase Storage with encrypted document vault |
-| Payments | Razorpay (PCI DSS compliant) |
+| Payments | Lemon Squeezy (merchant of record — handles global VAT/GST) |
 | Automation | TinyFish — 4 APIs under one key |
 | Deployment | Vercel (Edge Network) |
 
@@ -55,8 +55,8 @@ BidPilot uses every TinyFish API product under a single API key:
 | `/api/tinyfish/search` | GET | Search the web via TinyFish Search |
 | `/api/tinyfish/fetch` | POST | Extract content from URLs via TinyFish Fetch |
 | `/api/tinyfish/browser` | POST | Create a browser session via TinyFish Browser |
-| `/api/payments/razorpay` | POST | Create a Razorpay order for subscription |
-| `/api/payments/razorpay/verify` | POST | Verify payment signature and upgrade plan |
+| `/api/payments/lemonsqueezy/webhook` | POST | Verify the Lemon Squeezy signature and upgrade the team's plan |
+| `/api/payments/lemonsqueezy/confirm` | POST | Client-side success callback (logging only — the webhook is the source of truth) |
 | `/api/packets` | GET/POST | List and create vendor packets |
 | `/api/packets/[id]` | GET/PATCH/DELETE | Manage individual packets |
 | `/api/packets/[id]/documents` | GET/POST | Manage packet documents |
@@ -92,8 +92,10 @@ TINYFISH_API_KEY=your_tinyfish_key
 TINYFISH_API_BASE=https://agent.tinyfish.ai/v1
 BIDPILOT_DEMO_CODE=optional_access_code
 
-RAZORPAY_KEY_ID=your_razorpay_key_id
-RAZORPAY_KEY_SECRET=your_razorpay_key_secret
+# Required. The webhook refuses to process events without this set.
+LEMONSQUEEZY_WEBHOOK_SECRET=your_lemonsqueezy_webhook_secret
+NEXT_PUBLIC_LEMONSQUEEZY_CHECKOUT_URL_PRO=https://your-store.lemonsqueezy.com/checkout/...
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
 NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_ANON_KEY

@@ -2,7 +2,7 @@
 
 **Supplier Portal Automation for Procurement Teams**
 
-BidPilot turns vendor onboarding into executable web labor. Build your vendor packet once — BidPilot's AI agent fills every supplier portal, uploads your documents, and saves the draft. Your team reviews before anything goes live.
+BidPilot turns vendor onboarding into executable web labor. Build your vendor packet once — BidPilot's AI agent fills every supplier portal, uploads your documents, and saves the draft. Your team reviews before anything goes live
 
 ## Live Links
 
